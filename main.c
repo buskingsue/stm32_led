@@ -31,6 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define NUM_LEDS (sizeof(LED_Pins) / sizeof(LED_Pins[0]))
 
 /* USER CODE END PD */
 
@@ -54,6 +55,9 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+const uint16_t LED_Pins[] = {
+    LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin, LED5_Pin, LED6_Pin, LED7_Pin, LED8_Pin
+};
 
 /* USER CODE END 0 */
 
@@ -87,6 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t led_index = 0; // 현재 켜질 LED의 인덱스
 
   /* USER CODE END 2 */
 
@@ -95,21 +100,42 @@ int main(void)
   while (1)
   {
 
+    // 모든 LED를 끔 (초기화)
+         for (int i = 0; i < 8; i++) {
+             HAL_GPIO_WritePin(GPIOC, LED_Pins[i], GPIO_PIN_RESET);
+         }
 
-    HAL_GPIO_WritePin(GPIOC, LED1_Pin| LED2_Pin|LED3_Pin| LED4_Pin
-                      |LED5_Pin| LED6_Pin| LED7_Pin| LED8_Pin, GPIO_PIN_SET);
-    HAL_Delay(1000);
+         // 현재 인덱스의 LED를 킴
+         HAL_GPIO_WritePin(GPIOC, LED_Pins[led_index], GPIO_PIN_SET);
 
-    HAL_GPIO_WritePin(GPIOC, LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
-                      |LED5_Pin| LED6_Pin|LED7_Pin|LED8_Pin, GPIO_PIN_RESET);
-    HAL_Delay(1000);
+         // LED 인덱스를 1 증가시킴
+         led_index++;
+
+         // 마지막 LED까지 켜졌으면, 첫 번째 LED로 돌아감
+         if (led_index >= 8) {
+             led_index = 0;
+         }
+
+         HAL_Delay(500); // 500ms 대기
+     }
+
+     // main 함수 끝
+     return 0;
+}
+//    HAL_GPIO_WritePin(GPIOC, LED1_Pin| LED2_Pin|LED3_Pin| LED4_Pin
+//                      |LED5_Pin| LED6_Pin| LED7_Pin| LED8_Pin, GPIO_PIN_SET);
+//    HAL_Delay(1000);
+//
+//    HAL_GPIO_WritePin(GPIOC, LED1_Pin|LED2_Pin|LED3_Pin|LED4_Pin
+//                      |LED5_Pin| LED6_Pin|LED7_Pin|LED8_Pin, GPIO_PIN_RESET);
+//    HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-  }
+
   /* USER CODE END 3 */
-}
+
 
 /**
   * @brief System Clock Configuration
